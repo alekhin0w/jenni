@@ -31,6 +31,7 @@ addquote.example = '.addquote'
 
 def retrievequote(jenni, input):
     '''.quote <number> -- displays a given quote'''
+    NO_QUOTES = 'There are currently no quotes saved.'
     text = input.group(2)
     try:
         fn = open('quotes.txt', 'r')
@@ -38,6 +39,8 @@ def retrievequote(jenni, input):
         return jenni.reply('Please add a quote first.')
 
     lines = fn.readlines()
+    if len(lines) < 1:
+        return jenni.reply(NO_QUOTES)
     MAX = len(lines)
     fn.close()
     random.seed()
@@ -50,8 +53,16 @@ def retrievequote(jenni, input):
     if not (0 <= number <= MAX):
         jenni.reply("I'm not sure which quote you would like to see.")
     else:
-        line = lines[number - 1]
-        jenni.reply('Quote %s of %s: ' % (number, MAX) + line)
+        if lines:
+            if number == 1:
+                line = lines[0]
+            elif number == 0:
+                return jenni.say('There is no "0th" quote!')
+            else:
+                line = lines[number - 1]
+            jenni.reply('Quote %s of %s: ' % (number, MAX) + line)
+        else:
+            jenni.reply(NO_QUOTES)
 retrievequote.commands = ['quote']
 retrievequote.priority = 'low'
 retrievequote.example = '.quote'
@@ -74,10 +85,18 @@ def delquote(jenni, input):
     except:
         jenni.reply('Please enter the quote number you would like to delete.')
         return
-    newlines = lines[:number-1] + lines[number:]
+    if number > 0:
+        newlines = lines[:number - 1] + lines[number:]
+    elif number == 0:
+        return jenni.reply('There is no "0th" quote!')
+    elif number == -1:
+        newlines = lines[:number]
+    else:
+        ## number < -1
+        newlines = lines[:number] + lines[number + 1:]
     fn = open('quotes.txt', 'w')
     for line in newlines:
-        txt = uc.decode(line)
+        txt = line
         if txt:
             fn.write(txt)
             if txt[-1] != '\n':
