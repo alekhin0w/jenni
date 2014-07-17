@@ -15,7 +15,8 @@ from datetime import datetime, date
 def death(jenni, input):
     """ get list of last deaths by date or get the last ones """
     url = 'https://en.wikipedia.org/wiki/Deaths_in_%s'
-
+    d = date.today()
+ 
     if not input.group(2):
         year = datetime.now().year
         html = BeautifulSoup(urlopen(url % year).read())
@@ -28,11 +29,14 @@ def death(jenni, input):
             if d > date.today():
                 return jenni.say('*%s*, unknown, hemorroids and bleeding prolapse' % input.nick )
             html = BeautifulSoup(urlopen(url % d.strftime("%B_%Y")).read())
-            items = html.find(id=d.day).findParent('h3').findNext('ul').findAll('li')
+            try:
+		items = html.find(id=d.day).findParent('h3').findNext('ul').findAll('li')
+	    except AttributeError:
+		return jenni.say('No encontre muertes para la fecha %s' % d.__str__())
         else:
             return jenni.say('.d[eaths] %d/%m/%y')
-    for d in items:
-        jenni.say(d.text)
+    for e in items:
+        jenni.say("[%s] %s" % (d.__str__(), e.text))
     return
 
 death.commands = ['d', 'death']
