@@ -10,7 +10,7 @@ More info:
  * Phenny: http://inamidst.com/phenny/
 """
 
-import random
+import random, re
 from modules import unicode as uc
 
 MIN_SIZE_WORD = 4
@@ -23,8 +23,10 @@ inputs = []
 
 
 def _say_lanata(jenni, target):
-    jenni.say("%s?" % target)
-    jenni.say("*%s* es lanata" % target)
+    target = re.sub('\W', '', target)
+    if len(target) > 0:
+        jenni.say("%s?" % target)
+        jenni.say("*%s* es lanata" % target)
 
 def _parse_int(s):
     try:
