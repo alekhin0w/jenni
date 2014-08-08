@@ -23,7 +23,6 @@ inputs = []
 
 
 def _say_lanata(jenni, target):
-    target = re.sub('\W', '', target)
     if len(target) > 0:
         jenni.say("%s?" % target)
         jenni.say("*%s* es lanata" % target)
